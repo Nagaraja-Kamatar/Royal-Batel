@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cursor Clash</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    #arena {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: #333;
+      overflow: hidden;
+    }
+
+    .player {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    #player1 {
+      background: #4caf50;
+    }
+
+    #player2 {
+      background: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <div id="arena">
+    <div id="player1" class="player"></div>
+    <div id="player2" class="player"></div>
+  </div>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const player1 = document.getElementById("player1");
+    const player2 = document.getElementById("player2");
+
+    let p1 = { x: 100, y: 100, dx: 0, dy: 0 };
+    let p2 = { x: 300, y: 300, dx: 0, dy: 0 };
+
+    const speed = 2;
+
+    function update() {
+      movePlayer(p1);
+      movePlayer(p2);
+      render();
+      requestAnimationFrame(update);
+    }
+
+    function movePlayer(player) {
+      player.x += player.dx;
+      player.y += player.dy;
+
+      // Boundary check: stay in arena
+      const center = 250;
+      const dx = player.x - center;
+      const dy = player.y - center;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance > 220) {
+        // Push back toward center
+        player.x -= player.dx;
+        player.y -= player.dy;
+      }
+    }
+
+    function render() {
+      player1.style.left = p1.x + "px";
+      player1.style.top = p1.y + "px";
+
+      player2.style.left = p2.x + "px";
+      player2.style.top = p2.y + "px";
+    }
+
+    document.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        // Player 1 (WASD)
+        case "w": p1.dy = -speed; break;
+        case "s": p1.dy = speed; break;
+        case "a": p1.dx = -speed; break;
+        case "d": p1.dx = speed; break;
+        // Player 2 (Arrow keys)
+        case "ArrowUp": p2.dy = -speed; break;
+        case "ArrowDown": p2.dy = speed; break;
+        case "ArrowLeft": p2.dx = -speed; break;
+        case "ArrowRight": p2.dx = speed; break;
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      switch (e.key) {
+        case "w":
+        case "s": p1.dy = 0; break;
+        case "a":
+        case "d": p1.dx = 0; break;
+        case "ArrowUp":
+        case "ArrowDown": p2.dy = 0; break;
+        case "ArrowLeft":
+        case "ArrowRight": p2.dx = 0; break;
+      }
+    });
+
+    update();
+  </script>
+</body>
+</html>
