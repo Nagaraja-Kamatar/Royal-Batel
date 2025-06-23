@@ -33,11 +33,11 @@ export default function Player({ playerId }: PlayerProps) {
   });
   const [subscribe, get] = useKeyboardControls();
   
-  // Load the knight character model for both players
-  const { scene } = useGLTF("/models/knight_character.glb");
+  // Load the knight with sword model for both players
+  const { scene } = useGLTF("/models/knight_with_sword.glb");
   
   // Preload the model for better performance
-  useGLTF.preload("/models/knight_character.glb");
+  useGLTF.preload("/models/knight_with_sword.glb");
   
   const player = players[playerId];
   const otherPlayer = players[playerId === 1 ? 2 : 1];
@@ -218,7 +218,7 @@ export default function Player({ playerId }: PlayerProps) {
   const clonedScene = scene.clone();
   
   // Scale the knight character larger for better visibility
-  clonedScene.scale.setScalar(3.5);
+  clonedScene.scale.setScalar(4.2);
   
   // Ensure the avatar has proper materials and colors
   clonedScene.traverse((child) => {

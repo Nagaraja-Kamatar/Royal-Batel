@@ -4,6 +4,7 @@ import * as THREE from "three";
 import WarpEffect from "./WarpEffect";
 import EnvironmentEffects from "./EnvironmentEffects";
 import AnimatedCrowd from "./AnimatedCrowd";
+import RealisticAudience from "./RealisticAudience";
 import CrowdSynchronizer from "./CrowdSynchronizer";
 import CrowdReactionManager from "./CrowdReactionManager";
 import CrowdWave from "./CrowdWave";
@@ -352,6 +353,22 @@ export default function Arena() {
         <AnimatedCrowd position={[26, 10, 0]} rotation={[0, -Math.PI / 2, 0]} scale={[8, 8, 8]} crowdId="tier4-east" />
       </Suspense>
       */}
+      
+      {/* Multiple Crowd Sections - Realistic Tournament Atmosphere */}
+      {crowdPositions.map((crowd, index) => (
+        <Suspense key={crowd.crowdId} fallback={null}>
+          <RealisticAudience 
+            position={crowd.position}
+            rotation={[0, Math.atan2(crowd.position[0], crowd.position[2]), 0]} // Face toward center
+            scale={[
+              1.8 + Math.random() * 0.6, 
+              1.8 + Math.random() * 0.6, 
+              1.8 + Math.random() * 0.6
+            ]}
+            crowdId={crowd.crowdId}
+          />
+        </Suspense>
+      ))}
       
       {/* Royal tournament banners at corners - Larger and More Visible */}
       {[
