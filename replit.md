@@ -106,6 +106,11 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Players deal 20 damage per hit, fight until health reaches 0
 ✓ Made player colors brighter for better visibility
 ✓ Fixed leg visibility issues and improved full body display
+✓ Redesigned menu with modern gradient design and better color scheme
+✓ Reduced keyboard sensitivity from 0.15 to 0.08 for better control
+✓ Enhanced 3D player models with armor, helmets, and detailed equipment
+✓ Increased player size by 1.4x for better visibility and realism
+✓ Added medieval armor details including chest plates, shoulder guards, and knee armor
 
 ## Changelog
 

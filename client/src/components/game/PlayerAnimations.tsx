@@ -148,10 +148,10 @@ export default function PlayerAnimations({
   });
 
   return (
-    <group ref={groupRef} position={position}>
+    <group ref={groupRef} position={position} scale={[1.4, 1.4, 1.4]}>
       {/* Body */}
       <mesh ref={bodyRef} position={[0, 1, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.3, 0.4, 1.2]} />
+        <cylinderGeometry args={[0.35, 0.45, 1.4]} />
         <meshStandardMaterial 
           color={playerColor} 
           emissive={playerColor}
@@ -162,30 +162,52 @@ export default function PlayerAnimations({
       </mesh>
       
       {/* Head */}
-      <mesh position={[0, 1.8, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.25]} />
+      <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.3]} />
         <meshStandardMaterial 
           color={playerColor}
           emissive={playerColor}
           emissiveIntensity={0.1}
+        />
+      </mesh>
+      
+      {/* Helmet */}
+      <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.32]} />
+        <meshStandardMaterial 
+          color="#444444"
+          metalness={0.8}
+          roughness={0.2}
+          transparent
+          opacity={0.8}
         />
       </mesh>
       
       {/* Left Arm */}
-      <mesh ref={leftArmRef} position={[-0.5, 1.2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.1, 0.1, 0.8]} />
+      <mesh ref={leftArmRef} position={[-0.6, 1.3, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.12, 0.12, 0.9]} />
         <meshStandardMaterial color={playerColor} />
       </mesh>
       
       {/* Right Arm */}
-      <mesh ref={rightArmRef} position={[0.5, 1.2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.1, 0.1, 0.8]} />
+      <mesh ref={rightArmRef} position={[0.6, 1.3, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.12, 0.12, 0.9]} />
         <meshStandardMaterial color={playerColor} />
       </mesh>
       
-      {/* Left Leg - Made more visible */}
-      <mesh ref={leftLegRef} position={[-0.2, 0.4, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.8]} />
+      {/* Shoulder armor */}
+      <mesh position={[-0.6, 1.6, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.18]} />
+        <meshStandardMaterial color="#666666" metalness={0.7} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.6, 1.6, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.18]} />
+        <meshStandardMaterial color="#666666" metalness={0.7} roughness={0.3} />
+      </mesh>
+      
+      {/* Left Leg - Larger and more visible */}
+      <mesh ref={leftLegRef} position={[-0.25, 0.5, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.15, 0.15, 1.0]} />
         <meshStandardMaterial 
           color={playerColor}
           emissive={playerColor}
@@ -193,9 +215,9 @@ export default function PlayerAnimations({
         />
       </mesh>
       
-      {/* Right Leg - Made more visible */}
-      <mesh ref={rightLegRef} position={[0.2, 0.4, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.8]} />
+      {/* Right Leg - Larger and more visible */}
+      <mesh ref={rightLegRef} position={[0.25, 0.5, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.15, 0.15, 1.0]} />
         <meshStandardMaterial 
           color={playerColor}
           emissive={playerColor}
@@ -203,44 +225,72 @@ export default function PlayerAnimations({
         />
       </mesh>
       
-      {/* Feet for better visibility */}
-      <mesh position={[-0.2, 0.05, 0.1]} castShadow receiveShadow>
-        <boxGeometry args={[0.2, 0.1, 0.3]} />
-        <meshStandardMaterial color="#444444" />
+      {/* Knee armor */}
+      <mesh position={[-0.25, 0.6, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.12]} />
+        <meshStandardMaterial color="#555555" metalness={0.6} roughness={0.4} />
       </mesh>
-      <mesh position={[0.2, 0.05, 0.1]} castShadow receiveShadow>
-        <boxGeometry args={[0.2, 0.1, 0.3]} />
-        <meshStandardMaterial color="#444444" />
+      <mesh position={[0.25, 0.6, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.12]} />
+        <meshStandardMaterial color="#555555" metalness={0.6} roughness={0.4} />
       </mesh>
       
-      {/* Sword */}
-      <mesh ref={swordRef} position={[0.7, 1.4, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.03, 0.03, 1.2]} />
-        <meshStandardMaterial color="#c0c0c0" metalness={0.9} roughness={0.1} />
+      {/* Armored boots */}
+      <mesh position={[-0.25, 0.08, 0.15]} castShadow receiveShadow>
+        <boxGeometry args={[0.25, 0.15, 0.4]} />
+        <meshStandardMaterial color="#333333" metalness={0.5} roughness={0.6} />
+      </mesh>
+      <mesh position={[0.25, 0.08, 0.15]} castShadow receiveShadow>
+        <boxGeometry args={[0.25, 0.15, 0.4]} />
+        <meshStandardMaterial color="#333333" metalness={0.5} roughness={0.6} />
+      </mesh>
+      
+      {/* Sword - Larger and more impressive */}
+      <mesh ref={swordRef} position={[0.8, 1.6, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+        <cylinderGeometry args={[0.04, 0.04, 1.6]} />
+        <meshStandardMaterial color="#e0e0e0" metalness={0.9} roughness={0.1} />
       </mesh>
       
       {/* Sword Guard */}
-      <mesh position={[0.7, 1.4, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.08, 0.08, 0.1]} />
-        <meshStandardMaterial color="#8b4513" />
+      <mesh position={[0.8, 1.6, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 0.12]} />
+        <meshStandardMaterial color="#8b4513" metalness={0.6} roughness={0.4} />
       </mesh>
       
       {/* Sword Handle */}
-      <mesh position={[0.6, 1.2, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.04, 0.04, 0.3]} />
+      <mesh position={[0.7, 1.3, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 0.4]} />
         <meshStandardMaterial color="#654321" />
       </mesh>
       
-      {/* Shield */}
-      <mesh position={[-0.7, 1.2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.1]} />
+      {/* Sword pommel */}
+      <mesh position={[0.6, 1.1, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+        <sphereGeometry args={[0.08]} />
+        <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
+      </mesh>
+      
+      {/* Shield - Larger and more detailed */}
+      <mesh position={[-0.8, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.5, 0.5, 0.12]} />
         <meshStandardMaterial color="#654321" metalness={0.5} roughness={0.8} />
       </mesh>
       
+      {/* Shield rim */}
+      <mesh position={[-0.78, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <ringGeometry args={[0.45, 0.5, 16]} />
+        <meshStandardMaterial color="#444444" metalness={0.7} roughness={0.3} />
+      </mesh>
+      
       {/* Shield emblem */}
-      <mesh position={[-0.65, 1.2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
-        <cylinderGeometry args={[0.15, 0.15, 0.02]} />
-        <meshStandardMaterial color={playerColor} />
+      <mesh position={[-0.75, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <cylinderGeometry args={[0.18, 0.18, 0.03]} />
+        <meshStandardMaterial color={playerColor} emissive={playerColor} emissiveIntensity={0.3} />
+      </mesh>
+      
+      {/* Chest armor */}
+      <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.7, 0.4, 0.3]} />
+        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.4} />
       </mesh>
     </group>
   );

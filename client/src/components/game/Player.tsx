@@ -53,7 +53,7 @@ export default function Player({ playerId }: PlayerProps) {
   const lastFloatingText = useRef("");
   
   // Movement parameters
-  const moveSpeed = 0.15;
+  const moveSpeed = 0.08; // Reduced sensitivity for better control
   const friction = 0.85;
   const arenaCenter = new THREE.Vector3(0, 0.5, 0);
   const arenaSize = 15; // Square arena size
