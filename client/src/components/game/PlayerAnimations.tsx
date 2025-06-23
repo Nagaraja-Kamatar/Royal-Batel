@@ -21,21 +21,19 @@ export default function PlayerAnimations({
   otherPlayerPosition
 }: PlayerAnimationsProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const bodyRef = useRef<THREE.Mesh>(null);
-  const leftArmRef = useRef<THREE.Mesh>(null);
-  const rightArmRef = useRef<THREE.Mesh>(null);
-  const leftLegRef = useRef<THREE.Mesh>(null);
-  const rightLegRef = useRef<THREE.Mesh>(null);
-  const swordRef = useRef<THREE.Mesh>(null);
+  const characterRef = useRef<THREE.Group>(null);
   
   const walkCycle = useRef(0);
   const attackCycle = useRef(0);
   const hitReaction = useRef(0);
   
   const playerColor = playerId === 1 ? "#00ff00" : "#ff0000"; // Bright Green or Red
+  
+  // Load the 3D character model
+  const { scene: characterModel } = useGLTF("/models/cleopatra.glb");
 
   useFrame((state) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !characterRef.current) return;
     
     const time = state.clock.getElapsedTime();
     const deltaTime = state.clock.getDelta();
@@ -49,248 +47,112 @@ export default function PlayerAnimations({
     const faceAngle = Math.atan2(direction.x, direction.z);
     groupRef.current.rotation.y = faceAngle;
     
-    // Walk animation
+    // Simple walking animation - bob the character up and down
     if (isWalking) {
       walkCycle.current += deltaTime * 8;
+      characterRef.current.position.y = Math.sin(walkCycle.current * 2) * 0.05;
       
-      // Leg movement for walking
-      if (leftLegRef.current) {
-        leftLegRef.current.rotation.x = Math.sin(walkCycle.current) * 0.5;
-      }
-      if (rightLegRef.current) {
-        rightLegRef.current.rotation.x = Math.sin(walkCycle.current + Math.PI) * 0.5;
-      }
-      
-      // Arm swing during walking (when not attacking)
-      if (!isAttacking) {
-        if (leftArmRef.current) {
-          leftArmRef.current.rotation.x = Math.sin(walkCycle.current + Math.PI) * 0.3;
-        }
-        if (rightArmRef.current && !swordRef.current) {
-          rightArmRef.current.rotation.x = Math.sin(walkCycle.current) * 0.3;
-        }
-      }
-      
-      // Body bob during walking
-      if (bodyRef.current) {
-        bodyRef.current.position.y = Math.sin(walkCycle.current * 2) * 0.05;
-      }
+      // Add slight rotation for dynamic movement
+      characterRef.current.rotation.z = Math.sin(walkCycle.current) * 0.02;
     } else {
-      // Reset to idle position
       walkCycle.current = 0;
-      if (leftLegRef.current) leftLegRef.current.rotation.x = 0;
-      if (rightLegRef.current) rightLegRef.current.rotation.x = 0;
-      if (bodyRef.current) bodyRef.current.position.y = 0;
+      characterRef.current.position.y = THREE.MathUtils.lerp(characterRef.current.position.y, 0, deltaTime * 5);
+      characterRef.current.rotation.z = THREE.MathUtils.lerp(characterRef.current.rotation.z, 0, deltaTime * 5);
     }
     
-    // Attack animation
+    // Attack animation - lean forward and scale up slightly
     if (isAttacking) {
       attackCycle.current += deltaTime * 15;
       
       if (attackCycle.current < Math.PI) {
-        // Wind up and strike
         const attackProgress = Math.sin(attackCycle.current);
-        
-        if (rightArmRef.current) {
-          rightArmRef.current.rotation.x = -Math.PI / 4 - attackProgress * Math.PI / 2;
-          rightArmRef.current.rotation.z = attackProgress * Math.PI / 4;
-        }
-        
-        if (swordRef.current) {
-          swordRef.current.rotation.z = attackProgress * Math.PI / 6;
-        }
-        
-        // Body lean into attack
-        if (bodyRef.current) {
-          bodyRef.current.rotation.x = attackProgress * 0.2;
-        }
+        characterRef.current.rotation.x = attackProgress * 0.3;
+        characterRef.current.scale.setScalar(1 + attackProgress * 0.1);
       } else {
         attackCycle.current = 0;
       }
     } else {
       attackCycle.current = 0;
-      // Reset attack pose
-      if (rightArmRef.current) {
-        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -Math.PI / 6, deltaTime * 5);
-        rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, 0, deltaTime * 5);
-      }
-      if (bodyRef.current) {
-        bodyRef.current.rotation.x = THREE.MathUtils.lerp(bodyRef.current.rotation.x, 0, deltaTime * 5);
-      }
+      characterRef.current.rotation.x = THREE.MathUtils.lerp(characterRef.current.rotation.x, 0, deltaTime * 5);
+      characterRef.current.scale.setScalar(THREE.MathUtils.lerp(characterRef.current.scale.x, 1, deltaTime * 5));
     }
     
-    // Hit reaction animation
+    // Hit reaction animation - shake and recoil
     if (isHit) {
       hitReaction.current += deltaTime * 12;
       
       if (hitReaction.current < Math.PI) {
         const hitProgress = Math.sin(hitReaction.current);
-        
-        // Recoil animation
-        if (bodyRef.current) {
-          bodyRef.current.rotation.x = -hitProgress * 0.3;
-          bodyRef.current.position.x = Math.sin(hitReaction.current * 3) * 0.1;
-        }
-        
-        // Arms flail
-        if (leftArmRef.current) {
-          leftArmRef.current.rotation.x = hitProgress * Math.PI / 3;
-        }
-        if (rightArmRef.current) {
-          rightArmRef.current.rotation.x = hitProgress * Math.PI / 4;
-        }
+        characterRef.current.rotation.x = -hitProgress * 0.4;
+        characterRef.current.position.x = Math.sin(hitReaction.current * 8) * 0.05;
+        characterRef.current.position.z = Math.sin(hitReaction.current * 6) * 0.03;
       } else {
         hitReaction.current = 0;
       }
     } else {
       hitReaction.current = 0;
+      characterRef.current.position.x = THREE.MathUtils.lerp(characterRef.current.position.x, 0, deltaTime * 5);
+      characterRef.current.position.z = THREE.MathUtils.lerp(characterRef.current.position.z, 0, deltaTime * 5);
+    }
+  });
+
+  // Clone and prepare the character model
+  const clonedCharacter = characterModel.clone();
+  
+  // Apply player-specific coloring and enhancements
+  clonedCharacter.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      
+      // Apply player color tint to materials
+      if (child.material) {
+        const material = child.material.clone();
+        if (material instanceof THREE.MeshStandardMaterial) {
+          // Add player color as emissive tint
+          material.emissive = new THREE.Color(playerColor);
+          material.emissiveIntensity = 0.2;
+          
+          // Enhance material properties for better visibility
+          material.metalness = Math.min(material.metalness + 0.2, 1.0);
+          material.roughness = Math.max(material.roughness - 0.1, 0.1);
+        }
+        child.material = material;
+      }
     }
   });
 
   return (
-    <group ref={groupRef} position={position} scale={[1.4, 1.4, 1.4]}>
-      {/* Body */}
-      <mesh ref={bodyRef} position={[0, 1, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.35, 0.45, 1.4]} />
-        <meshStandardMaterial 
+    <group ref={groupRef} position={position} scale={[2.5, 2.5, 2.5]}>
+      {/* Main character model */}
+      <primitive 
+        ref={characterRef}
+        object={clonedCharacter}
+        position={[0, 0, 0]}
+        castShadow
+        receiveShadow
+      />
+      
+      {/* Player identification glow effect */}
+      <mesh position={[0, 2, 0]}>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshBasicMaterial 
           color={playerColor} 
-          emissive={playerColor}
-          emissiveIntensity={0.2}
-          metalness={0.3}
-          roughness={0.7}
+          transparent 
+          opacity={0.3}
+          wireframe
         />
       </mesh>
       
-      {/* Head */}
-      <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.3]} />
-        <meshStandardMaterial 
-          color={playerColor}
-          emissive={playerColor}
-          emissiveIntensity={0.1}
+      {/* Ground indicator */}
+      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.8, 1.0, 16]} />
+        <meshBasicMaterial 
+          color={playerColor} 
+          transparent 
+          opacity={0.4}
+          side={THREE.DoubleSide}
         />
-      </mesh>
-      
-      {/* Helmet */}
-      <mesh position={[0, 2.0, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.32]} />
-        <meshStandardMaterial 
-          color="#444444"
-          metalness={0.8}
-          roughness={0.2}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-      
-      {/* Left Arm */}
-      <mesh ref={leftArmRef} position={[-0.6, 1.3, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.9]} />
-        <meshStandardMaterial color={playerColor} />
-      </mesh>
-      
-      {/* Right Arm */}
-      <mesh ref={rightArmRef} position={[0.6, 1.3, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.9]} />
-        <meshStandardMaterial color={playerColor} />
-      </mesh>
-      
-      {/* Shoulder armor */}
-      <mesh position={[-0.6, 1.6, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.18]} />
-        <meshStandardMaterial color="#666666" metalness={0.7} roughness={0.3} />
-      </mesh>
-      <mesh position={[0.6, 1.6, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.18]} />
-        <meshStandardMaterial color="#666666" metalness={0.7} roughness={0.3} />
-      </mesh>
-      
-      {/* Left Leg - Larger and more visible */}
-      <mesh ref={leftLegRef} position={[-0.25, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.15, 0.15, 1.0]} />
-        <meshStandardMaterial 
-          color={playerColor}
-          emissive={playerColor}
-          emissiveIntensity={0.1}
-        />
-      </mesh>
-      
-      {/* Right Leg - Larger and more visible */}
-      <mesh ref={rightLegRef} position={[0.25, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.15, 0.15, 1.0]} />
-        <meshStandardMaterial 
-          color={playerColor}
-          emissive={playerColor}
-          emissiveIntensity={0.1}
-        />
-      </mesh>
-      
-      {/* Knee armor */}
-      <mesh position={[-0.25, 0.6, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.12]} />
-        <meshStandardMaterial color="#555555" metalness={0.6} roughness={0.4} />
-      </mesh>
-      <mesh position={[0.25, 0.6, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[0.12]} />
-        <meshStandardMaterial color="#555555" metalness={0.6} roughness={0.4} />
-      </mesh>
-      
-      {/* Armored boots */}
-      <mesh position={[-0.25, 0.08, 0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.25, 0.15, 0.4]} />
-        <meshStandardMaterial color="#333333" metalness={0.5} roughness={0.6} />
-      </mesh>
-      <mesh position={[0.25, 0.08, 0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.25, 0.15, 0.4]} />
-        <meshStandardMaterial color="#333333" metalness={0.5} roughness={0.6} />
-      </mesh>
-      
-      {/* Sword - Larger and more impressive */}
-      <mesh ref={swordRef} position={[0.8, 1.6, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.04, 0.04, 1.6]} />
-        <meshStandardMaterial color="#e0e0e0" metalness={0.9} roughness={0.1} />
-      </mesh>
-      
-      {/* Sword Guard */}
-      <mesh position={[0.8, 1.6, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.1, 0.1, 0.12]} />
-        <meshStandardMaterial color="#8b4513" metalness={0.6} roughness={0.4} />
-      </mesh>
-      
-      {/* Sword Handle */}
-      <mesh position={[0.7, 1.3, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <cylinderGeometry args={[0.05, 0.05, 0.4]} />
-        <meshStandardMaterial color="#654321" />
-      </mesh>
-      
-      {/* Sword pommel */}
-      <mesh position={[0.6, 1.1, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
-        <sphereGeometry args={[0.08]} />
-        <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
-      </mesh>
-      
-      {/* Shield - Larger and more detailed */}
-      <mesh position={[-0.8, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.5, 0.5, 0.12]} />
-        <meshStandardMaterial color="#654321" metalness={0.5} roughness={0.8} />
-      </mesh>
-      
-      {/* Shield rim */}
-      <mesh position={[-0.78, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
-        <ringGeometry args={[0.45, 0.5, 16]} />
-        <meshStandardMaterial color="#444444" metalness={0.7} roughness={0.3} />
-      </mesh>
-      
-      {/* Shield emblem */}
-      <mesh position={[-0.75, 1.3, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
-        <cylinderGeometry args={[0.18, 0.18, 0.03]} />
-        <meshStandardMaterial color={playerColor} emissive={playerColor} emissiveIntensity={0.3} />
-      </mesh>
-      
-      {/* Chest armor */}
-      <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[0.7, 0.4, 0.3]} />
-        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.4} />
       </mesh>
     </group>
   );
