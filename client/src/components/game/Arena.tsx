@@ -38,27 +38,7 @@ export default function Arena() {
     console.log(`Crowd reaction: ${reaction.type} with intensity ${reaction.intensity}`);
   }, []);
 
-  // Define colosseum-style audience positions in circular tiers
-  const colosseumPositions = [];
-  
-  // Generate circular audience arrangement
-  for (let tier = 1; tier <= 4; tier++) {
-    const radius = 14 + (tier * 3);
-    const height = 1.5 + (tier * 2);
-    const segments = Math.floor(32 + (tier * 8)); // More audience in higher tiers
-    
-    for (let i = 0; i < segments; i++) {
-      const angle = (i / segments) * Math.PI * 2;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      
-      colosseumPositions.push({
-        position: [x, height, z] as [number, number, number],
-        sectionId: `tier-${tier}-section-${i}`,
-        tierLevel: tier
-      });
-    }
-  }
+  // Simple audience arrangement around the arena
   
   // Load royal battle arena models
   const { scene: arenaFloor } = useGLTF("/models/royal_arena_floor.glb");
@@ -92,43 +72,33 @@ export default function Arena() {
       {/* Stadium Structure */}
       <Stadium />
 
-      {/* Colosseum arena floor - sand and stone */}
+      {/* Simple arena floor */}
       <mesh position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <cylinderGeometry args={[12, 12, 0.2, 32]} />
+        <boxGeometry args={[16, 16, 0.2]} />
         <meshStandardMaterial map={sandTexture} color="#d2b48c" roughness={0.9} />
       </mesh>
       
-      {/* Stone arena border */}
-      <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <ringGeometry args={[11.8, 12.5, 32]} />
-        <meshStandardMaterial color="#8b7355" roughness={0.8} />
+      {/* Arena boundary walls */}
+      <mesh position={[0, 0.5, 8]} castShadow receiveShadow>
+        <boxGeometry args={[16.2, 1, 0.2]} />
+        <meshStandardMaterial color="#666666" metalness={0.1} roughness={0.8} />
       </mesh>
-      
-      {/* Colosseum Arena Floor Enhancement */}
-      <Suspense fallback={null}>
-        <primitive 
-          object={arenaFloor.clone()} 
-          scale={[4, 1.5, 4]} 
-          position={[0, 0, 0]}
-          receiveShadow
-          castShadow
-        />
-      </Suspense>
-      
-      {/* Colosseum arena walls - stone barrier */}
-      <mesh position={[0, 1, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[12.5, 12.5, 2, 32, 1, true]} />
-        <meshStandardMaterial 
-          color="#8b7355" 
-          roughness={0.9}
-          metalness={0.1}
-          side={THREE.DoubleSide}
-        />
+      <mesh position={[0, 0.5, -8]} castShadow receiveShadow>
+        <boxGeometry args={[16.2, 1, 0.2]} />
+        <meshStandardMaterial color="#666666" metalness={0.1} roughness={0.8} />
+      </mesh>
+      <mesh position={[8, 0.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.2, 1, 16.2]} />
+        <meshStandardMaterial color="#666666" metalness={0.1} roughness={0.8} />
+      </mesh>
+      <mesh position={[-8, 0.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.2, 1, 16.2]} />
+        <meshStandardMaterial color="#666666" metalness={0.1} roughness={0.8} />
       </mesh>
       
       {/* Arena collision boundary (invisible) */}
       <mesh position={[0, 2, 0]} visible={false}>
-        <cylinderGeometry args={[11, 11, 4]} />
+        <boxGeometry args={[16, 4, 16]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
       {/* South wall */}
@@ -328,62 +298,46 @@ export default function Arena() {
       </Suspense>
       */}
       
-      {/* Colosseum Audience - Circular Stone Seating */}
+      {/* Stadium Audience */}
       <Suspense fallback={null}>
-        {colosseumPositions.map((audience, index) => (
-          <ColosseumAudience 
-            key={audience.sectionId}
-            position={audience.position}
-            sectionId={audience.sectionId}
-            tierLevel={audience.tierLevel}
-          />
-        ))}
+        {Array.from({ length: 40 }).map((_, i) => {
+          const angle = (i / 40) * Math.PI * 2;
+          const radius = 12 + Math.random() * 8;
+          const x = Math.cos(angle) * radius;
+          const z = Math.sin(angle) * radius;
+          const y = 2 + Math.random() * 4;
+          
+          return (
+            <RealisticAudience 
+              key={`audience-${i}`}
+              position={[x, y, z]}
+              rotation={[0, 0, 0]}
+              scale={[1.0 + Math.random() * 0.3, 1.0 + Math.random() * 0.3, 1.0 + Math.random() * 0.3]}
+              crowdId={`crowd-${i}`}
+            />
+          );
+        })}
       </Suspense>
       
-      {/* Colosseum entrance banners - Vibrant and dramatic */}
-      {Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const radius = 24;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const colors = ["#ff0000", "#0000ff", "#ffff00", "#ff8000"];
-        
-        return (
-          <group key={i} position={[x, 0, z]}>
-            {/* Tall banner pole */}
-            <mesh position={[0, 8, 0]} castShadow receiveShadow>
-              <cylinderGeometry args={[0.3, 0.3, 16]} />
-              <meshStandardMaterial color="#654321" />
-            </mesh>
-            {/* Large dramatic banner */}
-            <mesh position={[2, 12, 0]} castShadow rotation={[0, Math.PI / 6, 0]}>
-              <planeGeometry args={[4, 6]} />
-              <meshStandardMaterial 
-                color={colors[i % colors.length]} 
-                transparent 
-                opacity={0.95}
-              />
-            </mesh>
-            {/* Banner crest */}
-            <mesh position={[2, 12, 0.1]} castShadow rotation={[0, Math.PI / 6, 0]}>
-              <planeGeometry args={[2, 2]} />
-              <meshStandardMaterial 
-                color="#ffd700" 
-                transparent 
-                opacity={0.9}
-              />
-            </mesh>
-            {/* Dramatic lighting */}
-            <pointLight
-              position={[0, 14, 0]}
-              intensity={1.5}
-              color={colors[i % colors.length]}
-              distance={15}
-              castShadow
+      {/* Simple tournament banners */}
+      {[
+        [10, 10], [-10, 10], [10, -10], [-10, -10]
+      ].map(([x, z], i) => (
+        <group key={i} position={[x, 0, z]}>
+          <mesh position={[0, 4, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.1, 0.1, 8]} />
+            <meshStandardMaterial color="#8B4513" />
+          </mesh>
+          <mesh position={[0.5, 6, 0]} castShadow>
+            <planeGeometry args={[2, 3]} />
+            <meshStandardMaterial 
+              color={["#ff0000", "#0000ff", "#ffff00", "#ff8000"][i]} 
+              transparent 
+              opacity={0.9}
             />
-          </group>
-        );
-      })}
+          </mesh>
+        </group>
+      ))}
       
       {/* Royal Battle Banners Along Arena Sides */}
       {[
@@ -481,8 +435,7 @@ export default function Arena() {
         />
       </mesh>
       
-      {/* Crowd Wave Effects */}
-      <CrowdWave crowdPositions={colosseumPositions} />
+      {/* Simple crowd wave effects */}
       
       {/* Background warp effect */}
       <WarpEffect />

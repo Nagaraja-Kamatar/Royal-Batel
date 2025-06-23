@@ -93,11 +93,10 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Players now face each other in combat-ready stance
 ✓ Removed wooden stands - audience sits directly on ground with enhanced cheering animations
 ✓ Converted to proper fighting game - players continuously face each other and engage in combat
-✓ Created colosseum-style arena with circular stone battleground and sand floor
-✓ Replaced rectangular arena with authentic Roman colosseum design
-✓ Added 160+ audience members in circular tiered stone seating facing the center
-✓ Enhanced with vibrant colored banners (red, blue, yellow) and dramatic lighting
-✓ Added dust particles, flying banners, and immersive battle atmosphere
+✓ Simplified arena design with square battleground
+✓ Added audience members around the arena perimeter
+✓ Enhanced with colored banners and atmospheric lighting
+✓ Added dust particles and battle atmosphere effects
 
 ## Changelog
 
