@@ -76,29 +76,33 @@ export default function RealisticAudience({
     const baseWave = Math.sin(time * 0.4 + animationState.current.wavePhase) * 0.015;
     const baseSway = Math.sin(time * 0.25 + animationState.current.armWaveOffset) * 0.008;
     
-    // Excited movement during cheering (more pronounced for seated audience)
-    const cheerBounce = animationState.current.cheerIntensity > 0.3 ? 
-      Math.sin(time * 12 + animationState.current.bouncePhase) * animationState.current.cheerIntensity * 0.08 : 0;
+    // Enhanced excited movement during cheering (more energetic for ground-seated audience)
+    const cheerBounce = animationState.current.cheerIntensity > 0.2 ? 
+      Math.sin(time * 15 + animationState.current.bouncePhase) * animationState.current.cheerIntensity * 0.15 : 0;
     
-    const cheerSway = animationState.current.cheerIntensity > 0.3 ?
-      Math.sin(time * 8 + animationState.current.wavePhase) * animationState.current.cheerIntensity * 0.04 : 0;
+    const cheerSway = animationState.current.cheerIntensity > 0.2 ?
+      Math.sin(time * 10 + animationState.current.wavePhase) * animationState.current.cheerIntensity * 0.08 : 0;
+    
+    // Arm waving motion for cheering
+    const armWave = animationState.current.cheerIntensity > 0.4 ?
+      Math.sin(time * 20 + animationState.current.armWaveOffset) * animationState.current.cheerIntensity * 0.1 : 0;
     
     // Stadium wave effect
     const waveOffset = Math.sin(time * 1.5 + animationState.current.wavePhase + (position[0] * 0.1)) * 0.02;
     
-    // Apply movements (more subtle for seated audience)
+    // Apply enhanced movements for ground-seated cheering audience
     groupRef.current.position.set(
-      position[0] + baseSway + cheerSway * 0.5,
-      animationState.current.baseHeight + baseWave + cheerBounce + waveOffset,
+      position[0] + baseSway + cheerSway,
+      animationState.current.baseHeight + baseWave + cheerBounce + waveOffset + armWave,
       position[2]
     );
     
-    // Rotation for enthusiasm (head bobbing and body leaning)
-    const cheerRotationY = animationState.current.cheerIntensity > 0.4 ?
-      Math.sin(time * 15 + animationState.current.armWaveOffset) * animationState.current.cheerIntensity * 0.015 : 0;
+    // Enhanced rotation for energetic cheering (head bobbing and body leaning)
+    const cheerRotationY = animationState.current.cheerIntensity > 0.3 ?
+      Math.sin(time * 18 + animationState.current.armWaveOffset) * animationState.current.cheerIntensity * 0.025 : 0;
     
-    const cheerRotationX = animationState.current.cheerIntensity > 0.5 ?
-      Math.sin(time * 18) * animationState.current.cheerIntensity * 0.01 : 0;
+    const cheerRotationX = animationState.current.cheerIntensity > 0.4 ?
+      Math.sin(time * 22) * animationState.current.cheerIntensity * 0.02 : 0;
     
     groupRef.current.rotation.set(
       rotation[0] + cheerRotationX + baseSway * 0.3,
@@ -106,8 +110,8 @@ export default function RealisticAudience({
       rotation[2] + baseSway * 0.2
     );
     
-    // Subtle scale changes during excitement
-    const scaleMultiplier = 1 + (animationState.current.cheerIntensity * 0.03);
+    // More pronounced scale changes during excitement
+    const scaleMultiplier = 1 + (animationState.current.cheerIntensity * 0.08);
     groupRef.current.scale.set(
       scale[0] * scaleMultiplier,
       scale[1] * scaleMultiplier,
@@ -150,23 +154,13 @@ export default function RealisticAudience({
       scale={scale}
       userData={{ crowdId }}
     >
-      {/* Wooden stadium stand */}
-      <mesh position={[0, -0.3, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.5, 0.2, 1]} />
-        <meshStandardMaterial 
-          color="#8B4513" 
-          roughness={0.8}
-          metalness={0.1}
-        />
-      </mesh>
+      {/* Audience member sitting directly on ground */}
+      <primitive object={clonedAudience} position={[0, 0, 0]} />
       
-      {/* Seated audience member directly on stand */}
-      <primitive object={clonedAudience} position={[0, -0.2, 0]} />
-      
-      {/* Enthusiasm particles during big moments */}
-      {animationState.current.cheerIntensity > 1.2 && (
+      {/* Enhanced enthusiasm particles during big moments */}
+      {animationState.current.cheerIntensity > 0.8 && (
         <group position={[0, 1.5, 0]}>
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 12 }).map((_, i) => (
             <mesh key={i} position={[
               (Math.random() - 0.5) * 2,
               Math.random() * 2,

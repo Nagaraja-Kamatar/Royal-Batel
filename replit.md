@@ -91,6 +91,8 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Updated players to hold only swords with increased size for better visibility
 ✓ Enhanced audience with 50+ seated spectators on wooden stadium stands facing arena
 ✓ Players now face each other in combat-ready stance
+✓ Removed wooden stands - audience sits directly on ground with enhanced cheering animations
+✓ Converted to proper fighting game - players continuously face each other and engage in combat
 
 ## Changelog
 

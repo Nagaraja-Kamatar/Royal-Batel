@@ -74,6 +74,11 @@ export default function Player({ playerId }: PlayerProps) {
     const controls = get();
     const currentTime = state.clock.getElapsedTime();
     
+    // Always face the other player for combat
+    const otherPosition = new THREE.Vector3(...otherPlayer.position);
+    const directionToOther = otherPosition.clone().sub(position.current).normalize();
+    const faceAngle = Math.atan2(directionToOther.x, directionToOther.z);
+    
     // Get input based on player ID
     let moveX = 0;
     let moveZ = 0;
@@ -90,9 +95,17 @@ export default function Player({ playerId }: PlayerProps) {
       if (controls.p2Backward) moveZ += 1;
     }
     
-    // Apply movement
-    velocity.current.x += moveX * moveSpeed;
-    velocity.current.z += moveZ * moveSpeed;
+    // Apply movement with combat orientation
+    if (moveX !== 0 || moveZ !== 0) {
+      velocity.current.x += moveX * moveSpeed;
+      velocity.current.z += moveZ * moveSpeed;
+    } else {
+      // When no input, slight movement toward opponent to maintain engagement
+      if (distanceToOther > 2) {
+        const autoEngage = directionToOther.clone().multiplyScalar(0.008);
+        velocity.current.add(autoEngage);
+      }
+    }
     
     // Apply friction
     velocity.current.multiplyScalar(friction);
@@ -137,9 +150,16 @@ export default function Player({ playerId }: PlayerProps) {
     const currentSpeed = velocity.current.length();
     
     // Check collision with other player
-    const otherPosition = new THREE.Vector3(...otherPlayer.position);
     const collision = checkSphereCollision(position.current, playerRadius, otherPosition, playerRadius);
     const nearMiss = checkSphereCollision(position.current, playerRadius + 1.5, otherPosition, playerRadius);
+    
+    // Constant combat engagement - players seek each other when too far apart
+    const distanceToOther = position.current.distanceTo(otherPosition);
+    if (distanceToOther > 4 && !collision.collided) {
+      // Automatic combat engagement - draw players together
+      const seekDirection = directionToOther.clone().multiplyScalar(0.015);
+      velocity.current.add(seekDirection);
+    }
     
     // Trigger dodge effect for rapid movement changes or near misses
     if ((velocityChange > 0.3 || (nearMiss.collided && !collision.collided && currentSpeed > 0.1)) && 
@@ -203,17 +223,19 @@ export default function Player({ playerId }: PlayerProps) {
         incrementScore(playerId === 1 ? 2 : 1);
       }
       
-      // Ensure players face each other after collision
-      const directionToOther = otherPosition.clone().sub(position.current).normalize();
-      if (groupRef.current) {
-        groupRef.current.lookAt(otherPosition);
+      // Enhanced combat engagement after collision
+      if (distanceToOther > 2.5) {
+        // Aggressive re-engagement after collision
+        const engageDirection = directionToOther.clone().multiplyScalar(0.025);
+        velocity.current.add(engageDirection);
       }
       
       setLastCollision(currentTime);
     }
     
-    // Update group position
+    // Update group position and rotation to face opponent
     groupRef.current.position.copy(position.current);
+    groupRef.current.rotation.y = faceAngle;
     
     // Update game state
     updatePlayerPosition(playerId, [position.current.x, position.current.y, position.current.z]);
@@ -253,7 +275,7 @@ export default function Player({ playerId }: PlayerProps) {
   return (
     <>
       <group ref={groupRef} position={player.position}>
-        <primitive object={clonedScene} position={[0, 0, 0]} rotation={[0, playerId === 1 ? Math.PI/2 : -Math.PI/2, 0]} />
+        <primitive object={clonedScene} position={[0, 0, 0]} />
       </group>
       
       {/* Power field under player */}
