@@ -5,6 +5,7 @@ import WarpEffect from "./WarpEffect";
 import EnvironmentEffects from "./EnvironmentEffects";
 import AnimatedCrowd from "./AnimatedCrowd";
 import RealisticAudience from "./RealisticAudience";
+import ColosseumAudience from "./ColosseumAudience";
 import CrowdSynchronizer from "./CrowdSynchronizer";
 import CrowdReactionManager from "./CrowdReactionManager";
 import CrowdWave from "./CrowdWave";
@@ -36,74 +37,27 @@ export default function Arena() {
     console.log(`Crowd reaction: ${reaction.type} with intensity ${reaction.intensity}`);
   }, []);
 
-  // Define crowd positions for wave effects - Enhanced with more audience
-  const crowdPositions = [
-    // Main Arena Stands - Closest to battle ground (Multiple rows)
-    { position: [0, 2, -12] as [number, number, number], crowdId: 'north-main-close' },
-    { position: [3, 2, -12] as [number, number, number], crowdId: 'north-main-close-right' },
-    { position: [-3, 2, -12] as [number, number, number], crowdId: 'north-main-close-left' },
-    { position: [12, 2, 0] as [number, number, number], crowdId: 'east-main-close' },
-    { position: [12, 2, 3] as [number, number, number], crowdId: 'east-main-close-right' },
-    { position: [12, 2, -3] as [number, number, number], crowdId: 'east-main-close-left' },
-    { position: [-12, 2, 0] as [number, number, number], crowdId: 'west-main-close' },
-    { position: [-12, 2, 3] as [number, number, number], crowdId: 'west-main-close-right' },
-    { position: [-12, 2, -3] as [number, number, number], crowdId: 'west-main-close-left' },
-    { position: [0, 2, 12] as [number, number, number], crowdId: 'south-main-close' },
-    { position: [3, 2, 12] as [number, number, number], crowdId: 'south-main-close-right' },
-    { position: [-3, 2, 12] as [number, number, number], crowdId: 'south-main-close-left' },
+  // Define colosseum-style audience positions in circular tiers
+  const colosseumPositions = [];
+  
+  // Generate circular audience arrangement
+  for (let tier = 1; tier <= 4; tier++) {
+    const radius = 14 + (tier * 3);
+    const height = 1.5 + (tier * 2);
+    const segments = Math.floor(32 + (tier * 8)); // More audience in higher tiers
     
-    // Second Row - Behind first row
-    { position: [0, 3.5, -15] as [number, number, number], crowdId: 'north-second-row' },
-    { position: [4, 3.5, -15] as [number, number, number], crowdId: 'north-second-row-right' },
-    { position: [-4, 3.5, -15] as [number, number, number], crowdId: 'north-second-row-left' },
-    { position: [15, 3.5, 0] as [number, number, number], crowdId: 'east-second-row' },
-    { position: [15, 3.5, 4] as [number, number, number], crowdId: 'east-second-row-right' },
-    { position: [15, 3.5, -4] as [number, number, number], crowdId: 'east-second-row-left' },
-    { position: [-15, 3.5, 0] as [number, number, number], crowdId: 'west-second-row' },
-    { position: [-15, 3.5, 4] as [number, number, number], crowdId: 'west-second-row-right' },
-    { position: [-15, 3.5, -4] as [number, number, number], crowdId: 'west-second-row-left' },
-    { position: [0, 3.5, 15] as [number, number, number], crowdId: 'south-second-row' },
-    { position: [4, 3.5, 15] as [number, number, number], crowdId: 'south-second-row-right' },
-    { position: [-4, 3.5, 15] as [number, number, number], crowdId: 'south-second-row-left' },
-    
-    // Third Row - Upper tier
-    { position: [0, 5, -18] as [number, number, number], crowdId: 'north-third-row' },
-    { position: [5, 5, -18] as [number, number, number], crowdId: 'north-third-row-right' },
-    { position: [-5, 5, -18] as [number, number, number], crowdId: 'north-third-row-left' },
-    { position: [18, 5, 0] as [number, number, number], crowdId: 'east-third-row' },
-    { position: [18, 5, 5] as [number, number, number], crowdId: 'east-third-row-right' },
-    { position: [18, 5, -5] as [number, number, number], crowdId: 'east-third-row-left' },
-    { position: [-18, 5, 0] as [number, number, number], crowdId: 'west-third-row' },
-    { position: [-18, 5, 5] as [number, number, number], crowdId: 'west-third-row-right' },
-    { position: [-18, 5, -5] as [number, number, number], crowdId: 'west-third-row-left' },
-    { position: [0, 5, 18] as [number, number, number], crowdId: 'south-third-row' },
-    { position: [5, 5, 18] as [number, number, number], crowdId: 'south-third-row-right' },
-    { position: [-5, 5, 18] as [number, number, number], crowdId: 'south-third-row-left' },
-    
-    // Corner Sections - Multiple positions
-    { position: [13, 3, -13] as [number, number, number], crowdId: 'northeast-corner' },
-    { position: [16, 4, -16] as [number, number, number], crowdId: 'northeast-corner-upper' },
-    { position: [-13, 3, -13] as [number, number, number], crowdId: 'northwest-corner' },
-    { position: [-16, 4, -16] as [number, number, number], crowdId: 'northwest-corner-upper' },
-    { position: [13, 3, 13] as [number, number, number], crowdId: 'southeast-corner' },
-    { position: [16, 4, 16] as [number, number, number], crowdId: 'southeast-corner-upper' },
-    { position: [-13, 3, 13] as [number, number, number], crowdId: 'southwest-corner' },
-    { position: [-16, 4, 16] as [number, number, number], crowdId: 'southwest-corner-upper' },
-    
-    // VIP Sections - Premium viewing areas with more seats
-    { position: [8, 4, -10] as [number, number, number], crowdId: 'north-vip-left' },
-    { position: [-8, 4, -10] as [number, number, number], crowdId: 'north-vip-right' },
-    { position: [10, 4, 8] as [number, number, number], crowdId: 'south-vip-left' },
-    { position: [-10, 4, 8] as [number, number, number], crowdId: 'south-vip-right' },
-    { position: [6, 4, -8] as [number, number, number], crowdId: 'north-vip-center-left' },
-    { position: [-6, 4, -8] as [number, number, number], crowdId: 'north-vip-center-right' },
-    
-    // Distant Stadium Crowds - Background atmosphere
-    { position: [0, 1.5, -25] as [number, number, number], crowdId: 'north-distant' },
-    { position: [25, 1.5, 0] as [number, number, number], crowdId: 'east-distant' },
-    { position: [-25, 1.5, 0] as [number, number, number], crowdId: 'west-distant' },
-    { position: [0, 1.5, 25] as [number, number, number], crowdId: 'south-distant' }
-  ];
+    for (let i = 0; i < segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      
+      colosseumPositions.push({
+        position: [x, height, z] as [number, number, number],
+        sectionId: `tier-${tier}-section-${i}`,
+        tierLevel: tier
+      });
+    }
+  }
   
   // Load royal battle arena models
   const { scene: arenaFloor } = useGLTF("/models/royal_arena_floor.glb");
@@ -137,49 +91,44 @@ export default function Arena() {
       {/* Stadium Structure */}
       <Stadium />
 
-      {/* Large medieval countryside extending beyond arena */}
-      <mesh position={[0, -0.5, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial map={grassTexture} color="#3a5f3a" />
+      {/* Colosseum arena floor - sand and stone */}
+      <mesh position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <cylinderGeometry args={[12, 12, 0.2, 32]} />
+        <meshStandardMaterial map={sandTexture} color="#d2b48c" roughness={0.9} />
       </mesh>
       
-      {/* Royal tournament ground around arena */}
-      <mesh position={[0, -0.48, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <boxGeometry args={[35, 35, 0.02]} />
-        <meshStandardMaterial map={sandTexture} color="#c19a6b" />
+      {/* Stone arena border */}
+      <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <ringGeometry args={[11.8, 12.5, 32]} />
+        <meshStandardMaterial color="#8b7355" roughness={0.8} />
       </mesh>
       
-      {/* Royal Arena Floor */}
-      <Suspense fallback={
-        <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <boxGeometry args={[16, 16, 0.2]} />
-          <meshStandardMaterial map={asphaltTexture} />
-        </mesh>
-      }>
+      {/* Colosseum Arena Floor Enhancement */}
+      <Suspense fallback={null}>
         <primitive 
           object={arenaFloor.clone()} 
-          scale={[5, 2, 5]} 
+          scale={[4, 1.5, 4]} 
           position={[0, 0, 0]}
           receiveShadow
           castShadow
         />
       </Suspense>
       
-      {/* Arena wall (invisible collision boundary) */}
-      <mesh position={[0, 2, 0]} visible={false}>
-        <boxGeometry args={[16, 4, 16]} />
-        <meshBasicMaterial transparent opacity={0} />
+      {/* Colosseum arena walls - stone barrier */}
+      <mesh position={[0, 1, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[12.5, 12.5, 2, 32, 1, true]} />
+        <meshStandardMaterial 
+          color="#8b7355" 
+          roughness={0.9}
+          metalness={0.1}
+          side={THREE.DoubleSide}
+        />
       </mesh>
       
-      {/* Visible arena boundary walls */}
-      {/* North wall */}
-      <mesh position={[0, 0.5, 8]} castShadow receiveShadow>
-        <boxGeometry args={[16.2, 1, 0.2]} />
-        <meshStandardMaterial 
-          color="#666666" 
-          metalness={0.1}
-          roughness={0.8}
-        />
+      {/* Arena collision boundary (invisible) */}
+      <mesh position={[0, 2, 0]} visible={false}>
+        <cylinderGeometry args={[11, 11, 4]} />
+        <meshBasicMaterial transparent opacity={0} />
       </mesh>
       {/* South wall */}
       <mesh position={[0, 0.5, -8]} castShadow receiveShadow>
@@ -378,53 +327,62 @@ export default function Arena() {
       </Suspense>
       */}
       
-      {/* Multiple Crowd Sections - Realistic Tournament Atmosphere */}
+      {/* Colosseum Audience - Circular Stone Seating */}
       <Suspense fallback={null}>
-        {crowdPositions.map((crowd, index) => (
-          <RealisticAudience 
-            key={crowd.crowdId}
-            position={crowd.position}
-            rotation={[0, 0, 0]} // Rotation handled internally to face arena
-            scale={[
-              1.2 + Math.random() * 0.4, 
-              1.2 + Math.random() * 0.4, 
-              1.2 + Math.random() * 0.4
-            ]}
-            crowdId={crowd.crowdId}
+        {colosseumPositions.map((audience, index) => (
+          <ColosseumAudience 
+            key={audience.sectionId}
+            position={audience.position}
+            sectionId={audience.sectionId}
+            tierLevel={audience.tierLevel}
           />
         ))}
       </Suspense>
       
-      {/* Royal tournament banners at corners - Larger and More Visible */}
-      {[
-        [15, 15], [-15, 15], [15, -15], [-15, -15]
-      ].map(([x, z], i) => (
-        <group key={i} position={[x, 0, z]}>
-          {/* Banner pole */}
-          <mesh position={[0, 6, 0]} castShadow receiveShadow>
-            <cylinderGeometry args={[0.2, 0.2, 12]} />
-            <meshStandardMaterial color="#8B4513" />
-          </mesh>
-          {/* Royal banner */}
-          <mesh position={[1, 9, 0]} castShadow>
-            <planeGeometry args={[3, 4]} />
-            <meshStandardMaterial 
-              color={i % 2 === 0 ? "#4169e1" : "#dc143c"} 
-              transparent 
-              opacity={0.9}
+      {/* Colosseum entrance banners - Vibrant and dramatic */}
+      {Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const radius = 24;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const colors = ["#ff0000", "#0000ff", "#ffff00", "#ff8000"];
+        
+        return (
+          <group key={i} position={[x, 0, z]}>
+            {/* Tall banner pole */}
+            <mesh position={[0, 8, 0]} castShadow receiveShadow>
+              <cylinderGeometry args={[0.3, 0.3, 16]} />
+              <meshStandardMaterial color="#654321" />
+            </mesh>
+            {/* Large dramatic banner */}
+            <mesh position={[2, 12, 0]} castShadow rotation={[0, Math.PI / 6, 0]}>
+              <planeGeometry args={[4, 6]} />
+              <meshStandardMaterial 
+                color={colors[i % colors.length]} 
+                transparent 
+                opacity={0.95}
+              />
+            </mesh>
+            {/* Banner crest */}
+            <mesh position={[2, 12, 0.1]} castShadow rotation={[0, Math.PI / 6, 0]}>
+              <planeGeometry args={[2, 2]} />
+              <meshStandardMaterial 
+                color="#ffd700" 
+                transparent 
+                opacity={0.9}
+              />
+            </mesh>
+            {/* Dramatic lighting */}
+            <pointLight
+              position={[0, 14, 0]}
+              intensity={1.5}
+              color={colors[i % colors.length]}
+              distance={15}
+              castShadow
             />
-          </mesh>
-          {/* Banner decoration */}
-          <mesh position={[1, 9, 0.1]} castShadow>
-            <planeGeometry args={[1, 1]} />
-            <meshStandardMaterial 
-              color="#ffd700" 
-              transparent 
-              opacity={0.8}
-            />
-          </mesh>
-        </group>
-      ))}
+          </group>
+        );
+      })}
       
       {/* Royal Battle Banners Along Arena Sides */}
       {[
@@ -512,8 +470,15 @@ export default function Arena() {
       {/* Crowd Reaction Management */}
       <CrowdReactionManager onReactionTrigger={handleReactionTrigger} />
       
-      {/* Crowd Wave Effects */}
-      <CrowdWave crowdPositions={crowdPositions} />
+      {/* Dust particles for battle atmosphere */}
+      <mesh position={[0, 0.2, 0]}>
+        <sphereGeometry args={[0.1, 8, 8]} />
+        <meshBasicMaterial 
+          color="#d2b48c" 
+          transparent 
+          opacity={0.3}
+        />
+      </mesh>
       
       {/* Background warp effect */}
       <WarpEffect />

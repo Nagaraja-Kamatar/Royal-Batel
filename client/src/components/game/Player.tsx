@@ -56,7 +56,7 @@ export default function Player({ playerId }: PlayerProps) {
   const moveSpeed = 0.15;
   const friction = 0.85;
   const arenaCenter = new THREE.Vector3(0, 0.5, 0);
-  const arenaSize = 15; // Square arena size (was radius 7.5, now 15x15 square)
+  const arenaRadius = 11; // Circular colosseum arena
   const playerRadius = 0.8; // Slightly larger for avatar collision
   
   useEffect(() => {
@@ -114,9 +114,13 @@ export default function Player({ playerId }: PlayerProps) {
     // Update position
     position.current.add(velocity.current);
     
-    // Keep player in arena bounds
-    const boundsResult = keepInSquareBounds(position.current, arenaCenter, arenaSize, playerRadius);
-    position.current = boundsResult.position;
+    // Keep player in circular arena bounds
+    const distanceFromCenter = position.current.distanceTo(arenaCenter);
+    if (distanceFromCenter > arenaRadius - playerRadius) {
+      const direction = position.current.clone().sub(arenaCenter).normalize();
+      position.current = arenaCenter.clone().add(direction.multiplyScalar(arenaRadius - playerRadius));
+    }
+    const boundsResult = { position: position.current, outOfBounds: distanceFromCenter > arenaRadius };
     
     // Check if player went out of bounds
     if (boundsResult.outOfBounds && currentTime - lastCollision > 1) {
