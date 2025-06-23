@@ -59,6 +59,12 @@ export default function Player({ playerId }: PlayerProps) {
   const arenaSize = 15; // Square arena size
   const playerRadius = 0.8; // Slightly larger for avatar collision
   
+  // Animation states
+  const [isAttacking, setIsAttacking] = useState(false);
+  const [isHit, setIsHit] = useState(false);
+  const [showKnockout, setShowKnockout] = useState(false);
+  const attackCooldown = useRef(0);
+  
   useEffect(() => {
     // Reset position when game restarts
     position.current.set(...player.position);
@@ -83,17 +89,29 @@ export default function Player({ playerId }: PlayerProps) {
     // Get input based on player ID
     let moveX = 0;
     let moveZ = 0;
+    let attackPressed = false;
     
     if (playerId === 1) {
       if (controls.p1Left) moveX -= 1;
       if (controls.p1Right) moveX += 1;
       if (controls.p1Forward) moveZ -= 1;
       if (controls.p1Backward) moveZ += 1;
+      attackPressed = controls.p1Attack || controls.space; // Space for player 1 attack
     } else {
       if (controls.p2Left) moveX -= 1;
       if (controls.p2Right) moveX += 1;
       if (controls.p2Forward) moveZ -= 1;
       if (controls.p2Backward) moveZ += 1;
+      attackPressed = controls.p2Attack || controls.enter; // Enter for player 2 attack
+    }
+    
+    // Handle attack input
+    if (attackPressed && currentTime - attackCooldown.current > 1.0) {
+      setIsAttacking(true);
+      attackCooldown.current = currentTime;
+      
+      // Reset attack animation after delay
+      setTimeout(() => setIsAttacking(false), 300);
     }
     
     // Apply movement with combat orientation
@@ -153,6 +171,18 @@ export default function Player({ playerId }: PlayerProps) {
     // Check collision with other player
     const collision = checkSphereCollision(position.current, playerRadius, otherPosition, playerRadius);
     const nearMiss = checkSphereCollision(position.current, playerRadius + 1.5, otherPosition, playerRadius);
+    
+    // Handle hit detection during attack
+    if (isAttacking && distanceToOther < 2.0 && currentTime - lastCollision > 0.5) {
+      // Trigger hit reaction on other player
+      setIsHit(true);
+      setTimeout(() => setIsHit(false), 500);
+      
+      // Play hit sound and effects
+      audioManager.playHitSound();
+      
+      setLastCollision(currentTime);
+    }
     
     // Constant combat engagement - players seek each other when too far apart
     if (distanceToOther > 4 && !collision.collided) {

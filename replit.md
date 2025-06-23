@@ -98,6 +98,9 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Added round-based fighting effects with dynamic lighting
 ✓ Enhanced with combat intensity effects and victory celebrations
 ✓ Added energy grid and combat zone visual effects
+✓ Added walking animations with leg movement and body bob
+✓ Created realistic hand movements and sword attack animations
+✓ Replaced 'Hit' text with dramatic 'KNOCKOUT' effects with particles and lightning
 
 ## Changelog
 
