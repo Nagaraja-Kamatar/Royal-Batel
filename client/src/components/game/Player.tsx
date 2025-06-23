@@ -284,7 +284,6 @@ export default function Player({ playerId }: PlayerProps) {
     if (child instanceof THREE.Mesh) {
       child.castShadow = true;
       child.receiveShadow = true;
-      
       // Apply player color tint to the materials
       if (child.material) {
         const material = child.material.clone();
