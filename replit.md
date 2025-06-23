@@ -94,9 +94,10 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Removed wooden stands - audience sits directly on ground with enhanced cheering animations
 ✓ Converted to proper fighting game - players continuously face each other and engage in combat
 ✓ Simplified arena design with square battleground
-✓ Added audience members around the arena perimeter
-✓ Enhanced with colored banners and atmospheric lighting
-✓ Added dust particles and battle atmosphere effects
+✓ Removed all audience for focused combat experience
+✓ Added round-based fighting effects with dynamic lighting
+✓ Enhanced with combat intensity effects and victory celebrations
+✓ Added energy grid and combat zone visual effects
 
 ## Changelog
 

@@ -7,6 +7,7 @@ import AnimatedCrowd from "./AnimatedCrowd";
 import RealisticAudience from "./RealisticAudience";
 import ColosseumAudience from "./ColosseumAudience";
 import BattleAtmosphere from "./BattleAtmosphere";
+import RoundEffects from "./RoundEffects";
 import CrowdSynchronizer from "./CrowdSynchronizer";
 import CrowdReactionManager from "./CrowdReactionManager";
 import CrowdWave from "./CrowdWave";
@@ -298,26 +299,7 @@ export default function Arena() {
       </Suspense>
       */}
       
-      {/* Stadium Audience */}
-      <Suspense fallback={null}>
-        {Array.from({ length: 40 }).map((_, i) => {
-          const angle = (i / 40) * Math.PI * 2;
-          const radius = 12 + Math.random() * 8;
-          const x = Math.cos(angle) * radius;
-          const z = Math.sin(angle) * radius;
-          const y = 2 + Math.random() * 4;
-          
-          return (
-            <RealisticAudience 
-              key={`audience-${i}`}
-              position={[x, y, z]}
-              rotation={[0, 0, 0]}
-              scale={[1.0 + Math.random() * 0.3, 1.0 + Math.random() * 0.3, 1.0 + Math.random() * 0.3]}
-              crowdId={`crowd-${i}`}
-            />
-          );
-        })}
-      </Suspense>
+      {/* No audience - clean arena for focused combat */}
       
       {/* Simple tournament banners */}
       {[
@@ -422,8 +404,7 @@ export default function Arena() {
       {/* Crowd Synchronization System */}
       <CrowdSynchronizer onCrowdSync={handleCrowdSync} />
       
-      {/* Crowd Reaction Management */}
-      <CrowdReactionManager onReactionTrigger={handleReactionTrigger} />
+      {/* Simplified reaction management for round effects */}
       
       {/* Dust particles for battle atmosphere */}
       <mesh position={[0, 0.2, 0]}>
@@ -445,6 +426,9 @@ export default function Arena() {
       
       {/* Battle atmosphere with dust and particles */}
       <BattleAtmosphere />
+      
+      {/* Round-based fighting effects */}
+      <RoundEffects />
     </group>
   );
 }

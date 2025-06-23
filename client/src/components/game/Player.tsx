@@ -139,14 +139,8 @@ export default function Player({ playerId }: PlayerProps) {
         floatingTextActive.current = false;
       }, 2000);
       
-      // Reset position and velocity to opposite sides of circular arena
-      const angle = playerId === 1 ? 0 : Math.PI;
-      const resetRadius = 6;
-      const resetPos = [
-        Math.cos(angle) * resetRadius,
-        0.5,
-        Math.sin(angle) * resetRadius
-      ];
+      // Reset position and velocity to opposite sides for new round
+      const resetPos = playerId === 1 ? [4, 0.5, 0] : [-4, 0.5, 0];
       position.current.set(resetPos[0], resetPos[1], resetPos[2]);
       velocity.current.set(0, 0, 0);
       setLastCollision(currentTime);
