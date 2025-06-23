@@ -6,6 +6,7 @@ import EnvironmentEffects from "./EnvironmentEffects";
 import AnimatedCrowd from "./AnimatedCrowd";
 import RealisticAudience from "./RealisticAudience";
 import ColosseumAudience from "./ColosseumAudience";
+import BattleAtmosphere from "./BattleAtmosphere";
 import CrowdSynchronizer from "./CrowdSynchronizer";
 import CrowdReactionManager from "./CrowdReactionManager";
 import CrowdWave from "./CrowdWave";
@@ -480,11 +481,17 @@ export default function Arena() {
         />
       </mesh>
       
+      {/* Crowd Wave Effects */}
+      <CrowdWave crowdPositions={colosseumPositions} />
+      
       {/* Background warp effect */}
       <WarpEffect />
       
       {/* Environment effects */}
       <EnvironmentEffects />
+      
+      {/* Battle atmosphere with dust and particles */}
+      <BattleAtmosphere />
     </group>
   );
 }
