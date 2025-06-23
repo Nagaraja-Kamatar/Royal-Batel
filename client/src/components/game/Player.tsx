@@ -136,33 +136,7 @@ export default function Player({ playerId }: PlayerProps) {
     const boundsResult = keepInSquareBounds(position.current, arenaCenter, arenaSize, playerRadius);
     position.current = boundsResult.position;
     
-    // Check if player went out of bounds
-    if (boundsResult.outOfBounds && currentTime - lastCollision > 1) {
-      const otherPlayerId = playerId === 1 ? 2 : 1;
-      incrementScore(otherPlayerId);
-      playHit();
-      
-      // Trigger shock wave effect
-      shockWaveActive.current = true;
-      if (shockWaveTimeout.current) clearTimeout(shockWaveTimeout.current);
-      shockWaveTimeout.current = setTimeout(() => {
-        shockWaveActive.current = false;
-      }, 800);
-      
-      // Show floating text
-      lastFloatingText.current = "OUT!";
-      floatingTextActive.current = true;
-      if (floatingTextTimeout.current) clearTimeout(floatingTextTimeout.current);
-      floatingTextTimeout.current = setTimeout(() => {
-        floatingTextActive.current = false;
-      }, 2000);
-      
-      // Reset position and velocity to opposite sides for new round
-      const resetPos = playerId === 1 ? [4, 0.5, 0] : [-4, 0.5, 0];
-      position.current.set(resetPos[0], resetPos[1], resetPos[2]);
-      velocity.current.set(0, 0, 0);
-      setLastCollision(currentTime);
-    }
+    // No out of bounds logic - players stay in arena and fight
     
     // Check for dodge effect - rapid direction change or near miss
     const velocityChange = velocity.current.clone().sub(lastVelocity.current).length();
@@ -174,12 +148,39 @@ export default function Player({ playerId }: PlayerProps) {
     
     // Handle hit detection during attack
     if (isAttacking && distanceToOther < 2.0 && currentTime - lastCollision > 0.5) {
+      // Deal damage to other player
+      const otherPlayerId = playerId === 1 ? 2 : 1;
+      damagePlayer(otherPlayerId, 20); // 20 damage per hit
+      
       // Trigger hit reaction on other player
       setIsHit(true);
       setTimeout(() => setIsHit(false), 500);
       
       // Play hit sound and effects
       audioManager.playHitSound();
+      
+      // Check if other player is defeated
+      const otherPlayer = players[otherPlayerId];
+      if (otherPlayer.health <= 0) {
+        // Winner gets a point
+        incrementScore(playerId);
+        
+        // Show knockout effect
+        setShowKnockout(true);
+        
+        // Reset both players for next round
+        setTimeout(() => {
+          resetPlayerHealth(1);
+          resetPlayerHealth(2);
+          const resetPos1 = [3, 0.5, 0];
+          const resetPos2 = [-3, 0.5, 0];
+          updatePlayerPosition(1, resetPos1);
+          updatePlayerPosition(2, resetPos2);
+          position.current.set(playerId === 1 ? resetPos1[0] : resetPos2[0], 0.5, 0);
+          velocity.current.set(0, 0, 0);
+          setShowKnockout(false);
+        }, 3000);
+      }
       
       setLastCollision(currentTime);
     }

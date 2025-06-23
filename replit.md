@@ -101,6 +101,11 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Added walking animations with leg movement and body bob
 ✓ Created realistic hand movements and sword attack animations
 ✓ Replaced 'Hit' text with dramatic 'KNOCKOUT' effects with particles and lightning
+✓ Changed from push-out-of-bounds to health-based combat system
+✓ Added health bars above players showing current health
+✓ Players deal 20 damage per hit, fight until health reaches 0
+✓ Made player colors brighter for better visibility
+✓ Fixed leg visibility issues and improved full body display
 
 ## Changelog
 
