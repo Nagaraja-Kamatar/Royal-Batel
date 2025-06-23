@@ -29,8 +29,17 @@ export default function PlayerAnimations({
   
   const playerColor = playerId === 1 ? "#00ff00" : "#ff0000"; // Bright Green or Red
   
-  // Load the 3D character model
-  const { scene: characterModel } = useGLTF("/models/cleopatra.glb");
+  // Load the 3D character model with error handling
+  const { scene: characterModel, error } = useGLTF("/models/cleopatra.glb");
+  
+  // Log if there's an issue loading the model
+  useEffect(() => {
+    if (error) {
+      console.error("Failed to load character model:", error);
+    } else if (characterModel) {
+      console.log("Character model loaded successfully:", characterModel);
+    }
+  }, [characterModel, error]);
 
   useFrame((state) => {
     if (!groupRef.current || !characterRef.current) return;
@@ -96,7 +105,23 @@ export default function PlayerAnimations({
     }
   });
 
-  // Clone and prepare the character model
+  // Clone and prepare the character model only if it exists
+  if (!characterModel) {
+    console.warn("Character model not loaded yet");
+    return (
+      <group ref={groupRef} position={position} scale={[2.5, 2.5, 2.5]}>
+        <mesh position={[0, 1, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.8, 1.6, 0.4]} />
+          <meshStandardMaterial 
+            color={playerColor}
+            emissive={playerColor}
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+      </group>
+    );
+  }
+  
   const clonedCharacter = characterModel.clone();
   
   // Apply player-specific coloring and enhancements
@@ -157,3 +182,6 @@ export default function PlayerAnimations({
     </group>
   );
 }
+
+// Preload the character model
+useGLTF.preload("/models/cleopatra.glb");
