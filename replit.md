@@ -86,6 +86,11 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Added comprehensive dodge effect system with visual and audio feedback
 ✓ Implemented stadium atmosphere with bleachers, pillars, and warning lights
 ✓ Improved lighting and camera positioning for better visibility
+✓ Migrated project from Replit Agent to Replit environment with proper server binding
+✓ Generated realistic seated audience models with medieval tournament chairs
+✓ Updated players to hold only swords with increased size for better visibility
+✓ Enhanced audience with 50+ seated spectators on wooden stadium stands facing arena
+✓ Players now face each other in combat-ready stance
 
 ## Changelog
 

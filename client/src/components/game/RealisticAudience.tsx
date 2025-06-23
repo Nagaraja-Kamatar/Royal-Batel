@@ -19,8 +19,13 @@ export default function RealisticAudience({
 }: RealisticAudienceProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { scene: audienceMember } = useGLTF("/models/seated_audience_member.glb");
-  const { scene: chair } = useGLTF("/models/tournament_chair.glb");
   const { gamePhase, players } = useGameState();
+  
+  // Calculate rotation to face arena center
+  const arenaCenter = new THREE.Vector3(0, 0, 0);
+  const audiencePosition = new THREE.Vector3(...position);
+  const lookDirection = arenaCenter.clone().sub(audiencePosition).normalize();
+  const faceTowardArena = Math.atan2(lookDirection.x, lookDirection.z);
   
   const animationState = useRef({
     wavePhase: Math.random() * Math.PI * 2,
@@ -33,9 +38,8 @@ export default function RealisticAudience({
     armWaveOffset: Math.random() * Math.PI
   });
 
-  // Preload the models
+  // Preload the model
   useGLTF.preload("/models/seated_audience_member.glb");
-  useGLTF.preload("/models/tournament_chair.glb");
 
   useEffect(() => {
     // React to score changes with more enthusiasm
@@ -98,7 +102,7 @@ export default function RealisticAudience({
     
     groupRef.current.rotation.set(
       rotation[0] + cheerRotationX + baseSway * 0.3,
-      rotation[1] + cheerRotationY,
+      faceTowardArena + cheerRotationY,
       rotation[2] + baseSway * 0.2
     );
     
@@ -111,51 +115,53 @@ export default function RealisticAudience({
     );
   });
 
-  // Clone the models to avoid sharing between instances
+  // Clone the model to avoid sharing between instances
   const clonedAudience = audienceMember.clone();
-  const clonedChair = chair.clone();
   
-  // Setup materials and shadows for both models
-  [clonedAudience, clonedChair].forEach(scene => {
-    scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        
-        if (child.material) {
-          const material = child.material.clone();
-          if (material instanceof THREE.MeshStandardMaterial) {
-            // Add subtle emissive glow during excitement
-            material.emissiveIntensity = animationState.current.cheerIntensity * 0.05;
-            // Vary audience member clothing colors slightly
-            if (scene === clonedAudience) {
-              const colorVariation = new THREE.Color().setHSL(
-                Math.random(),
-                0.3 + Math.random() * 0.4,
-                0.4 + Math.random() * 0.3
-              );
-              material.color.lerp(colorVariation, 0.3);
-            }
-          }
-          child.material = material;
+  // Setup materials and shadows
+  clonedAudience.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      
+      if (child.material) {
+        const material = child.material.clone();
+        if (material instanceof THREE.MeshStandardMaterial) {
+          // Add subtle emissive glow during excitement
+          material.emissiveIntensity = animationState.current.cheerIntensity * 0.05;
+          // Vary audience member clothing colors slightly
+          const colorVariation = new THREE.Color().setHSL(
+            Math.random(),
+            0.3 + Math.random() * 0.4,
+            0.4 + Math.random() * 0.3
+          );
+          material.color.lerp(colorVariation, 0.3);
         }
+        child.material = material;
       }
-    });
+    }
   });
 
   return (
     <group 
       ref={groupRef} 
       position={position}
-      rotation={rotation}
+      rotation={[rotation[0], faceTowardArena, rotation[2]]}
       scale={scale}
       userData={{ crowdId }}
     >
-      {/* Chair (positioned first, slightly lower) */}
-      <primitive object={clonedChair} position={[0, -0.2, 0]} />
+      {/* Wooden stadium stand */}
+      <mesh position={[0, -0.3, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.5, 0.2, 1]} />
+        <meshStandardMaterial 
+          color="#8B4513" 
+          roughness={0.8}
+          metalness={0.1}
+        />
+      </mesh>
       
-      {/* Seated audience member */}
-      <primitive object={clonedAudience} />
+      {/* Seated audience member directly on stand */}
+      <primitive object={clonedAudience} position={[0, -0.2, 0]} />
       
       {/* Enthusiasm particles during big moments */}
       {animationState.current.cheerIntensity > 1.2 && (

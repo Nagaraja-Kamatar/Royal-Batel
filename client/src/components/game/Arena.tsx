@@ -36,49 +36,73 @@ export default function Arena() {
     console.log(`Crowd reaction: ${reaction.type} with intensity ${reaction.intensity}`);
   }, []);
 
-  // Define crowd positions for wave effects - Updated for enhanced stadium layout
+  // Define crowd positions for wave effects - Enhanced with more audience
   const crowdPositions = [
-    // Main Arena Stands - Closest to battle ground
-    { position: [0, 3, -12] as [number, number, number], crowdId: 'north-main-close' },
-    { position: [12, 3, 0] as [number, number, number], crowdId: 'east-main-close' },
-    { position: [-12, 3, 0] as [number, number, number], crowdId: 'west-main-close' },
-    { position: [0, 3, 12] as [number, number, number], crowdId: 'south-main-close' },
+    // Main Arena Stands - Closest to battle ground (Multiple rows)
+    { position: [0, 2, -12] as [number, number, number], crowdId: 'north-main-close' },
+    { position: [3, 2, -12] as [number, number, number], crowdId: 'north-main-close-right' },
+    { position: [-3, 2, -12] as [number, number, number], crowdId: 'north-main-close-left' },
+    { position: [12, 2, 0] as [number, number, number], crowdId: 'east-main-close' },
+    { position: [12, 2, 3] as [number, number, number], crowdId: 'east-main-close-right' },
+    { position: [12, 2, -3] as [number, number, number], crowdId: 'east-main-close-left' },
+    { position: [-12, 2, 0] as [number, number, number], crowdId: 'west-main-close' },
+    { position: [-12, 2, 3] as [number, number, number], crowdId: 'west-main-close-right' },
+    { position: [-12, 2, -3] as [number, number, number], crowdId: 'west-main-close-left' },
+    { position: [0, 2, 12] as [number, number, number], crowdId: 'south-main-close' },
+    { position: [3, 2, 12] as [number, number, number], crowdId: 'south-main-close-right' },
+    { position: [-3, 2, 12] as [number, number, number], crowdId: 'south-main-close-left' },
     
-    // Second Tier - Elevated stands
-    { position: [0, 6, -18] as [number, number, number], crowdId: 'north-second-tier' },
-    { position: [18, 6, 0] as [number, number, number], crowdId: 'east-second-tier' },
-    { position: [-18, 6, 0] as [number, number, number], crowdId: 'west-second-tier' },
-    { position: [0, 6, 18] as [number, number, number], crowdId: 'south-second-tier' },
+    // Second Row - Behind first row
+    { position: [0, 3.5, -15] as [number, number, number], crowdId: 'north-second-row' },
+    { position: [4, 3.5, -15] as [number, number, number], crowdId: 'north-second-row-right' },
+    { position: [-4, 3.5, -15] as [number, number, number], crowdId: 'north-second-row-left' },
+    { position: [15, 3.5, 0] as [number, number, number], crowdId: 'east-second-row' },
+    { position: [15, 3.5, 4] as [number, number, number], crowdId: 'east-second-row-right' },
+    { position: [15, 3.5, -4] as [number, number, number], crowdId: 'east-second-row-left' },
+    { position: [-15, 3.5, 0] as [number, number, number], crowdId: 'west-second-row' },
+    { position: [-15, 3.5, 4] as [number, number, number], crowdId: 'west-second-row-right' },
+    { position: [-15, 3.5, -4] as [number, number, number], crowdId: 'west-second-row-left' },
+    { position: [0, 3.5, 15] as [number, number, number], crowdId: 'south-second-row' },
+    { position: [4, 3.5, 15] as [number, number, number], crowdId: 'south-second-row-right' },
+    { position: [-4, 3.5, 15] as [number, number, number], crowdId: 'south-second-row-left' },
     
-    // Corner Sections - Diagonal viewing angles
-    { position: [15, 4, -15] as [number, number, number], crowdId: 'northeast-corner' },
-    { position: [-15, 4, -15] as [number, number, number], crowdId: 'northwest-corner' },
-    { position: [15, 4, 15] as [number, number, number], crowdId: 'southeast-corner' },
-    { position: [-15, 4, 15] as [number, number, number], crowdId: 'southwest-corner' },
+    // Third Row - Upper tier
+    { position: [0, 5, -18] as [number, number, number], crowdId: 'north-third-row' },
+    { position: [5, 5, -18] as [number, number, number], crowdId: 'north-third-row-right' },
+    { position: [-5, 5, -18] as [number, number, number], crowdId: 'north-third-row-left' },
+    { position: [18, 5, 0] as [number, number, number], crowdId: 'east-third-row' },
+    { position: [18, 5, 5] as [number, number, number], crowdId: 'east-third-row-right' },
+    { position: [18, 5, -5] as [number, number, number], crowdId: 'east-third-row-left' },
+    { position: [-18, 5, 0] as [number, number, number], crowdId: 'west-third-row' },
+    { position: [-18, 5, 5] as [number, number, number], crowdId: 'west-third-row-right' },
+    { position: [-18, 5, -5] as [number, number, number], crowdId: 'west-third-row-left' },
+    { position: [0, 5, 18] as [number, number, number], crowdId: 'south-third-row' },
+    { position: [5, 5, 18] as [number, number, number], crowdId: 'south-third-row-right' },
+    { position: [-5, 5, 18] as [number, number, number], crowdId: 'south-third-row-left' },
     
-    // Third Tier - Upper stands
-    { position: [0, 8, -25] as [number, number, number], crowdId: 'north-upper-tier' },
-    { position: [25, 8, 0] as [number, number, number], crowdId: 'east-upper-tier' },
-    { position: [-25, 8, 0] as [number, number, number], crowdId: 'west-upper-tier' },
-    { position: [0, 8, 25] as [number, number, number], crowdId: 'south-upper-tier' },
+    // Corner Sections - Multiple positions
+    { position: [13, 3, -13] as [number, number, number], crowdId: 'northeast-corner' },
+    { position: [16, 4, -16] as [number, number, number], crowdId: 'northeast-corner-upper' },
+    { position: [-13, 3, -13] as [number, number, number], crowdId: 'northwest-corner' },
+    { position: [-16, 4, -16] as [number, number, number], crowdId: 'northwest-corner-upper' },
+    { position: [13, 3, 13] as [number, number, number], crowdId: 'southeast-corner' },
+    { position: [16, 4, 16] as [number, number, number], crowdId: 'southeast-corner-upper' },
+    { position: [-13, 3, 13] as [number, number, number], crowdId: 'southwest-corner' },
+    { position: [-16, 4, 16] as [number, number, number], crowdId: 'southwest-corner-upper' },
     
-    // VIP Sections - Premium viewing areas
-    { position: [8, 5, -10] as [number, number, number], crowdId: 'north-vip-left' },
-    { position: [-8, 5, -10] as [number, number, number], crowdId: 'north-vip-right' },
-    { position: [10, 5, 8] as [number, number, number], crowdId: 'south-vip-left' },
-    { position: [-10, 5, 8] as [number, number, number], crowdId: 'south-vip-right' },
+    // VIP Sections - Premium viewing areas with more seats
+    { position: [8, 4, -10] as [number, number, number], crowdId: 'north-vip-left' },
+    { position: [-8, 4, -10] as [number, number, number], crowdId: 'north-vip-right' },
+    { position: [10, 4, 8] as [number, number, number], crowdId: 'south-vip-left' },
+    { position: [-10, 4, 8] as [number, number, number], crowdId: 'south-vip-right' },
+    { position: [6, 4, -8] as [number, number, number], crowdId: 'north-vip-center-left' },
+    { position: [-6, 4, -8] as [number, number, number], crowdId: 'north-vip-center-right' },
     
     // Distant Stadium Crowds - Background atmosphere
-    { position: [0, 2, -35] as [number, number, number], crowdId: 'north-distant' },
-    { position: [35, 2, 0] as [number, number, number], crowdId: 'east-distant' },
-    { position: [-35, 2, 0] as [number, number, number], crowdId: 'west-distant' },
-    { position: [0, 2, 35] as [number, number, number], crowdId: 'south-distant' },
-    
-    // Far Corner Crowds - Complete stadium atmosphere
-    { position: [30, 1, -30] as [number, number, number], crowdId: 'far-northeast' },
-    { position: [-30, 1, -30] as [number, number, number], crowdId: 'far-northwest' },
-    { position: [30, 1, 30] as [number, number, number], crowdId: 'far-southeast' },
-    { position: [-30, 1, 30] as [number, number, number], crowdId: 'far-southwest' }
+    { position: [0, 1.5, -25] as [number, number, number], crowdId: 'north-distant' },
+    { position: [25, 1.5, 0] as [number, number, number], crowdId: 'east-distant' },
+    { position: [-25, 1.5, 0] as [number, number, number], crowdId: 'west-distant' },
+    { position: [0, 1.5, 25] as [number, number, number], crowdId: 'south-distant' }
   ];
   
   // Load royal battle arena models
@@ -355,20 +379,21 @@ export default function Arena() {
       */}
       
       {/* Multiple Crowd Sections - Realistic Tournament Atmosphere */}
-      {crowdPositions.map((crowd, index) => (
-        <Suspense key={crowd.crowdId} fallback={null}>
+      <Suspense fallback={null}>
+        {crowdPositions.map((crowd, index) => (
           <RealisticAudience 
+            key={crowd.crowdId}
             position={crowd.position}
-            rotation={[0, Math.atan2(crowd.position[0], crowd.position[2]), 0]} // Face toward center
+            rotation={[0, 0, 0]} // Rotation handled internally to face arena
             scale={[
-              1.8 + Math.random() * 0.6, 
-              1.8 + Math.random() * 0.6, 
-              1.8 + Math.random() * 0.6
+              1.2 + Math.random() * 0.4, 
+              1.2 + Math.random() * 0.4, 
+              1.2 + Math.random() * 0.4
             ]}
             crowdId={crowd.crowdId}
           />
-        </Suspense>
-      ))}
+        ))}
+      </Suspense>
       
       {/* Royal tournament banners at corners - Larger and More Visible */}
       {[

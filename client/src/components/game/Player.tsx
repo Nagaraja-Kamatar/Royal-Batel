@@ -203,6 +203,12 @@ export default function Player({ playerId }: PlayerProps) {
         incrementScore(playerId === 1 ? 2 : 1);
       }
       
+      // Ensure players face each other after collision
+      const directionToOther = otherPosition.clone().sub(position.current).normalize();
+      if (groupRef.current) {
+        groupRef.current.lookAt(otherPosition);
+      }
+      
       setLastCollision(currentTime);
     }
     
@@ -247,7 +253,7 @@ export default function Player({ playerId }: PlayerProps) {
   return (
     <>
       <group ref={groupRef} position={player.position}>
-        <primitive object={clonedScene} />
+        <primitive object={clonedScene} position={[0, 0, 0]} rotation={[0, playerId === 1 ? Math.PI/2 : -Math.PI/2, 0]} />
       </group>
       
       {/* Power field under player */}
