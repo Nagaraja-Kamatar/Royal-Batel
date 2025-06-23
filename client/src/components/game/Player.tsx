@@ -78,6 +78,7 @@ export default function Player({ playerId }: PlayerProps) {
     const otherPosition = new THREE.Vector3(...otherPlayer.position);
     const directionToOther = otherPosition.clone().sub(position.current).normalize();
     const faceAngle = Math.atan2(directionToOther.x, directionToOther.z);
+    const distanceToOther = position.current.distanceTo(otherPosition);
     
     // Get input based on player ID
     let moveX = 0;
@@ -154,7 +155,6 @@ export default function Player({ playerId }: PlayerProps) {
     const nearMiss = checkSphereCollision(position.current, playerRadius + 1.5, otherPosition, playerRadius);
     
     // Constant combat engagement - players seek each other when too far apart
-    const distanceToOther = position.current.distanceTo(otherPosition);
     if (distanceToOther > 4 && !collision.collided) {
       // Automatic combat engagement - draw players together
       const seekDirection = directionToOther.clone().multiplyScalar(0.015);
