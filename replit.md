@@ -115,6 +115,9 @@ The build process compiles both frontend (Vite) and backend (ESBuild) into a sin
 ✓ Added player color tinting and glow effects for team identification
 ✓ Implemented walking, attack, and hit reaction animations for 3D character
 ✓ Added ground indicator rings for better player positioning visibility
+✓ Completely redesigned home page with modern gradient design and animated background
+✓ Enhanced menu with medieval theme using weapon emojis and color-coded player sections
+✓ Added glass morphism effects and improved visual hierarchy
 
 ## Changelog
 
